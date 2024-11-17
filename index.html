@@ -7,9 +7,56 @@
 </head>
 <body>
   <div id="app">
-    <div>
+    <nav>
+      <h1>
+        Cozinha Palevá
+      </h1>
+      <ul>
+        <li v-if="current_store">
+          <div>
+            <address>{{current_store.trade_name}}</address>
+            <address>{{current_store.code}}</address>
+          </div>
+          <div>
+            <button v-on:click="logoutStore()">Sair</button>
+          </div>
+        </li>
+        <li v-else>
+          <div>
+            <input type="text" v-model="store_code" placeholder="Insira o código">
+            <button v-on:click="getStore(store_code)">Buscar</button>
+          </div>
+          <p>Insira o código do Estabelecimento</p>
+        </li>
+      </ul>
+    </nav>
 
-    </div>
+    <main>
+      <div v-if="message">
+        <strong>{{ message }}</strong>
+      </div>
+      <div v-if="current_store">
+        <h2>Pedidos</h2>
+        <div>
+          <select v-model="selected">
+            <option value="">Todos</option>
+            <option value="waiting_confirmation">Pendentes</option>
+            <option value="preparing">Aceitos</option>
+            <option value="done">Finalizados</option>
+          </select>
+          <button v-on:click="getOrders()">Listar pedidos</button>
+        </div>
+        <div>
+          <div v-if="orders">
+            {{orders}}
+          </div>
+          <div v-for="order in Orders">
+            
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="main.js"></script>
