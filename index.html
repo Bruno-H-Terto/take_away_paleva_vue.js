@@ -16,7 +16,8 @@
         <li v-if="current_store">
           <div>
             <address>{{current_store.trade_name}}</address>
-            <address>{{current_store.code}}</address>
+            <address>CNPJ: {{current_store.register_number}}</address>
+            <address>Código {{current_store.code}}</address>
           </div>
           <div>
             <button v-on:click="logoutStore()">Sair</button>
@@ -40,12 +41,12 @@
         <h2>Pedidos</h2>
         <div>
           <select v-model="selected">
-            <option value="">Todos</option>
+            <option disabled value="">Selecione</option>
+            <option value="all">Todos</option>
             <option value="waiting_confirmation">Pendentes</option>
             <option value="preparing">Aceitos</option>
             <option value="done">Finalizados</option>
           </select>
-          <button v-on:click="getOrders()">Listar pedidos</button>
         </div>
 
         <div id="orders">
@@ -68,12 +69,31 @@
         </div>
 
         <dialog id="order_details">
+          <span>{{message_order}}</span>
           <h3>Pedido {{Order.code}}</h3>
+          <h4>Status {{Order.status}}</h4>
           <h4>Solicitado {{Order.created_at}}</h4>
           <div>
             <span>Cliente {{Order.name}}</span>
+            <span>CPF {{Order.register_number}}</span>
             <address>Telefone {{Order.phone_number}}</address>
             <address>E-mail {{Order.email}}</address>
+          </div>
+          <div>
+            <ul>
+              <li v-for="item in Order.items">
+                <span>{{item.menu}}</span>
+                <span>{{item.item}}</span>
+                <span>Opção {{item.portion}}</span>
+                <span>Quantidade {{item.quantity}}</span>
+                <span>Observação {{item.observation}}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <button v-if="Order.status == 'waiting_confirmation'" v-on:click="patchPreparing(Order.code)">Aceitar</button>
+            <button v-if="Order.status == 'preparing'" v-on:click="patchDone(Order.code)">Finalizar</button>
           </div>
         </dialog>
       </div>
