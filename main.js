@@ -6,7 +6,8 @@ const app = Vue.createApp({
       message: '',
       selected: '',
       Orders: [],
-      orders: ''
+      message_orders: '',
+      Order: ''
     }
   },
 
@@ -50,6 +51,7 @@ const app = Vue.createApp({
     },
 
     async getOrders(){
+      this.Orders = [];
       this.orders = '';
       let params = new URLSearchParams({
         status: this.selected,
@@ -57,11 +59,53 @@ const app = Vue.createApp({
 
       let data = await fetch(`http://localhost:3000/api/v1/stores/${this.current_store.code}/orders/status?${params}`);
       results = await data.json();
-      console.log(results)
       if(results.message){
-        this.orders = results.message
+        this.message_orders = results.message
       }else{
-        
+        this.message_orders = '';
+        results.forEach(order => {
+          var data_order = new Object();
+          data_order.code = order.code;
+          data_order.name = order.name;
+          data_order.status = order.status;
+
+          this.Orders.push(data_order);
+        });
+      }
+    },
+
+    async showModal(order_code){
+      const modal = document.querySelector(`#order_details`);
+      Order = await this.getDetailsOrder(order_code);
+      modal.showModal();
+    },
+
+    async getDetailsOrder(order_code){
+      let data = await fetch(`http://localhost:3000/api/v1/stores/${this.current_store.code}/orders/${order_code}`);
+      result = await data.json();
+      if(result.error_message){
+        this.message_order = result.error_message;
+      }else{
+        var order = new Object();
+        order.code = result.order.code;
+        order.name = result.order.name;
+        order.phone_number = result.order.phone_number || 'Sem registro';
+        order.email = result.order.email || 'Sem registro';
+        order.status = result.order.status;
+        order.register_number = result.order.register_number || 'Sem registro';
+        order.created_at = result.order.created_at_current;
+        order.items = [];
+        result.order_items.forEach(result_item => {
+          var item = new Object();
+          item.menu = result_item.menu;
+          item.item = result_item.item;
+          item.portion = result_item.portion;
+          item.observation = result_item.observation;
+          item.quantity = result_item.quantity;
+          order.items.push(item);
+        });
+      this.Order = '';
+      return this.Order = order;
       }
     }
   }
