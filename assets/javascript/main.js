@@ -94,6 +94,11 @@ const app = Vue.createApp({
       modal.showModal();
     },
 
+    closeModal(){
+      const modal = document.querySelector(`#order_details`);
+      modal.close();
+    },
+
     async getDetailsOrder(order_code){
       let data = await fetch(`http://localhost:3000/api/v1/stores/${this.current_store.code}/orders/${order_code}`);
       let result = await data.json();

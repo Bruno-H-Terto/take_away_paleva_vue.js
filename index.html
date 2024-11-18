@@ -1,110 +1,166 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cozinha Palevá</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
-<body>
-  <div id="app">
-    <nav>
-      <h1>
-        Cozinha Palevá
-      </h1>
-      <ul>
-        <li v-if="current_store">
-          <div>
-            <address>{{current_store.trade_name}}</address>
-            <address>CNPJ: {{current_store.register_number}}</address>
-            <address>Código {{current_store.code}}</address>
-          </div>
-          <div>
-            <button v-on:click="logoutStore()">Sair</button>
-          </div>
-        </li>
-        <li v-else>
-          <div>
-            <input type="text" v-model="store_code" placeholder="Insira o código">
-            <button v-on:click="getStore(store_code)">Buscar</button>
-          </div>
-          <p>Insira o código do Estabelecimento</p>
-        </li>
-      </ul>
-    </nav>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozinha Palevá</title>
 
-    <main>
-      <div v-if="message">
-        <strong>{{ message }}</strong>
-      </div>
-      <div v-if="current_store">
-        <h2>Pedidos</h2>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/styles/style.css">
+  </head>
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-expand-lg navbar-light bg-red">
         <div>
-          <select v-model="selected">
-            <option disabled value="">Selecione</option>
-            <option value="all">Todos</option>
-            <option value="waiting_confirmation">Pendentes</option>
-            <option value="preparing">Aceitos</option>
-            <option value="done">Finalizados</option>
-          </select>
+          <img src="assets/images/take_away.png" alt="logo" class="logo">
+          <a class="navbar-brand" href="#">Cozinha Palevá</a>
         </div>
+        <button 
+          class="navbar-toggler" 
+          type="button" 
+          data-toggle="collapse" 
+          data-target="#conteudoNavbarSuportado" 
+          aria-controls="conteudoNavbarSuportado" 
+          aria-expanded="false" 
+          aria-label="Alterna navegação"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <div id="orders">
-          <div v-if="message_orders">
-            {{message_orders}}
-          </div>
-          <div>
-            <ul>
-              <li v-for="order in Orders">
-                <div>
-                  <div>
-                    <h5>{{order.code}}</h5>
-                    <small>{{order.name}}</small>
-                  </div>
-                  <button v-on:click="showModal(order.code)" >Mais informações</button>
+        <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
+          <ul class="navbar-nav ml-auto">
+            <li v-if="current_store" class="nav-item d-flex justify-content-between align-items-center">
+              <div class="d-flex flex-row justify-content-around">
+                <address class="m-1">{{ current_store.trade_name }}</address>
+                <address class="m-1">CNPJ: {{ current_store.register_number }}</address>
+                <address class="m-1">Código: {{ current_store.code }}</address>
+              </div>
+              <button class="btn btn-paleva ml-3" v-on:click="logoutStore">Sair</button>
+            </li>            
+            <li v-else class="nav-item">
+              <div class="input-group">
+                <input 
+                  type="text" 
+                  v-model="store_code" 
+                  class="form-control form-input" 
+                  placeholder="Código do Estabelecimento"
+                >
+                <div class="input-group-append">
+                  <button 
+                    class="btn btn-paleva" 
+                    v-on:click="getStore(store_code)"
+                  >
+                    Buscar
+                  </button>
                 </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main class="container mt-4">
+        <div v-if="message" class="alert alert-info">{{ message }}</div>
+        <div v-if="current_store">
+          <h2>Pedidos</h2>
+          
+          <div class="form-group">
+            <label for="statusFilter">Filtrar por status:</label>
+            <select 
+              id="statusFilter" 
+              v-model="selected" 
+              class="form-control w-50"
+            >
+              <option disabled value="">Selecione</option>
+              <option value="all">Todos</option>
+              <option value="waiting_confirmation">Pendentes</option>
+              <option value="preparing">Aceitos</option>
+              <option value="done">Finalizados</option>
+            </select>
+          </div>
+
+          <div id="orders">
+            <div v-if="message_orders" class="alert alert-warning">{{ message_orders }}</div>
+            <ul class="list-group">
+              <li 
+                v-for="order in Orders" 
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <h5>{{ order.code }}</h5>
+                  <small>{{ order.name }}</small>
+                </div>
+                <button 
+                  class="btn btn-info" 
+                  v-on:click="showModal(order.code)"
+                >
+                  Mais informações
+                </button>
               </li>
             </ul>
+          </div>
+        </div>
+        <div v-else>
+          <div class="default">
+            <h2>Acesse sua cozinha</h2>
+            <p>Insira o código para continuar</p>
           </div>
         </div>
 
         <dialog id="order_details">
-          <span>{{message_order}}</span>
-          <h3>Pedido {{Order.code}}</h3>
-          <h4>Status {{Order.status}}</h4>
-          <h4>Solicitado {{Order.created_at}}</h4>
-          <div>
-            <span>Cliente {{Order.name}}</span>
-            <span>CPF {{Order.register_number}}</span>
-            <address>Telefone {{Order.phone_number}}</address>
-            <address>E-mail {{Order.email}}</address>
+          <div class="modal-header">
+            <h3>Pedido {{ Order.code }}</h3>
+            <button 
+              class="close" 
+              v-on:click="closeModal"
+            >&times;</button>
           </div>
           <div>
+            <div v-if="message_order" class="alert alert-info">{{ message_order }}</div>
+          </div>
+          <div class="modal-body">
+            <p><strong>Status:</strong> {{ Order.status }}</p>
+            <p><strong>Solicitado em:</strong> {{ Order.created_at }}</p>
+            <hr>
+            <p><strong>Cliente:</strong> {{ Order.name }}</p>
+            <p><strong>CPF:</strong> {{ Order.register_number }}</p>
+            <p><strong>Telefone:</strong> {{ Order.phone_number }}</p>
+            <p><strong>E-mail:</strong> {{ Order.email }}</p>
+            <hr>
             <ul>
               <li v-for="item in Order.items">
-                <span>{{item.menu}}</span>
-                <span>{{item.item}}</span>
-                <span>Opção {{item.portion}}</span>
-                <span>Quantidade {{item.quantity}}</span>
-                <span>Observação {{item.observation}}</span>
+                <p>
+                  <strong>{{ item.menu }}</strong>: {{ item.item }} 
+                  ({{ item.portion }}) - {{ item.quantity }} unidade(s)
+                </p>
+                <p><em>Obs:</em> {{ item.observation }}</p>
               </li>
             </ul>
           </div>
-
-          <div>
-            <button v-if="Order.status == 'waiting_confirmation'" v-on:click="patchPreparing(Order.code)">Aceitar</button>
-            <button v-if="Order.status == 'preparing'" v-on:click="patchDone(Order.code)">Finalizar</button>
+          <div class="modal-footer">
+            <button 
+              v-if="Order.status === 'waiting_confirmation'" 
+              class="btn btn-success" 
+              v-on:click="patchPreparing(Order.code)"
+            >
+              Aceitar
+            </button>
+            <button 
+              v-if="Order.status === 'preparing'" 
+              class="btn btn-primary" 
+              v-on:click="patchDone(Order.code)"
+            >
+              Finalizar
+            </button>
           </div>
         </dialog>
-      </div>
+      </main>
+    </div>
 
-    </main>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="main.js"></script>
-</body>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="assets/javascript/main.js"></script>
+  </body>
 </html>
