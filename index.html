@@ -44,6 +44,7 @@
                   v-model="store_code" 
                   class="form-control form-input" 
                   placeholder="Código do Estabelecimento"
+                  v-on:keyup.enter="getStore(store_code)"
                 >
                 <div class="input-group-append">
                   <button 
