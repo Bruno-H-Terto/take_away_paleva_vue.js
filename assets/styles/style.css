@@ -43,3 +43,7 @@ main .default {
 address, a {
   color: #fff !important;
 }
+
+.list-items{
+  list-style: none;
+}

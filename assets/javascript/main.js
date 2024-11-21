@@ -116,6 +116,7 @@ const app = Vue.createApp({
       order.phone_number = result.order.phone_number || 'Sem registro';
       order.email = result.order.email || 'Sem registro';
       order.status = result.order.status;
+      order.status_translated = this.translateStatus(result.order.status);
       order.register_number = result.order.register_number || 'Sem registro';
       order.created_at = result.order.created_at_current;
       order.items = [];
@@ -130,6 +131,21 @@ const app = Vue.createApp({
       });
     this.Order = '';
     return this.Order = order;
+    },
+
+    translateStatus(order_status){
+      let status_translate = '';
+      if(order_status == 'waiting_confirmation'){
+        status_translate = 'Aguardando confirmação';
+      }else if(order_status == 'preparing'){
+        status_translate = 'Preparando';
+      }else if(order_status == 'done'){
+        status_translate = 'Concluído';
+      }else if(order_status == 'finished'){
+        status_translate = 'Pedido entregue'
+      }
+
+      return status_translate
     },
 
     async patchPreparing(order_code) {

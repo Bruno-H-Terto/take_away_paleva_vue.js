@@ -120,7 +120,7 @@
             <div v-if="message_order" class="alert alert-info">{{ message_order }}</div>
           </div>
           <div class="modal-body">
-            <p><strong>Status:</strong> {{ Order.status }}</p>
+            <p><strong>Status:</strong> {{ Order.status_translated }}</p>
             <p><strong>Solicitado em:</strong> {{ Order.created_at }}</p>
             <hr>
             <p><strong>Cliente:</strong> {{ Order.name }}</p>
@@ -128,13 +128,16 @@
             <p><strong>Telefone:</strong> {{ Order.phone_number }}</p>
             <p><strong>E-mail:</strong> {{ Order.email }}</p>
             <hr>
-            <ul>
+            <ul class="list-items">
               <li v-for="item in Order.items">
-                <p>
-                  <strong>{{ item.menu }}</strong>: {{ item.item }} 
-                  ({{ item.portion }}) - {{ item.quantity }} unidade(s)
-                </p>
+                <div>
+                  <strong>{{ item.menu }}</strong>
+                  <p>{{ item.item }}</p>
+                  <p>({{ item.portion }})</p>
+                  <p>{{ item.quantity }} unidade(s)</p>
+                </div>
                 <p><em>Obs:</em> {{ item.observation }}</p>
+                <hr>
               </li>
             </ul>
           </div>
