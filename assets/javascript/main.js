@@ -8,7 +8,8 @@ const app = Vue.createApp({
       Orders: [],
       message_orders: '',
       Order: '',
-      message_order: ''
+      message_order: '',
+      information: ''
     }
   },
 
@@ -143,9 +144,23 @@ const app = Vue.createApp({
         status_translate = 'Concluído';
       }else if(order_status == 'finished'){
         status_translate = 'Pedido entregue'
+      }else if(order_status == 'canceled'){
+        status_translate = 'Pedido cancelado'
       }
 
       return status_translate
+    },
+
+    formatCurrentDate() {
+      const now = new Date();
+    
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+      return `${day}/${month}/${year} - ${hours}:${minutes}`;
     },
 
     async patchPreparing(order_code) {
@@ -184,6 +199,42 @@ const app = Vue.createApp({
       } catch (error) {
         console.error(error);
       }
+    },
+
+    async patchCanceled(order_code) {
+      try {
+        let time = this.formatCurrentDate();
+        let params = new URLSearchParams({
+          reason: this.information,
+          time: time
+        });
+
+        let response = await fetch(`http://localhost:3000/api/v1/stores/${this.current_store.code}/orders/${order_code}/canceled?${params}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'canceled' }),
+        });
+        if (!response.ok) throw new Error('Erro ao cancelar o pedido.');
+    
+        this.message_order = 'Pedido cancelado com sucesso!'
+        let result = await response.json();
+        this.closeCancelModal();
+        this.Order = this.orderDetails(result);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async modalCancel(order_code){
+      const modal = document.querySelector(`#cancel_form`);
+      modal.showModal();
+    },
+
+    closeCancelModal(){
+      const modal = document.querySelector(`#cancel_form`);
+      modal.close();
     }
   }
 })

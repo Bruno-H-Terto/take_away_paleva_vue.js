@@ -77,6 +77,8 @@
               <option value="waiting_confirmation">Pendentes</option>
               <option value="preparing">Aceitos</option>
               <option value="done">Finalizados</option>
+              <option value="canceled">Cancelados</option>
+              <option value="finished">Entregues</option>
             </select>
           </div>
 
@@ -157,6 +159,43 @@
             >
               Finalizar
             </button>
+            <button 
+              v-if="Order.status === 'waiting_confirmation' || Order.status === 'preparing'" 
+              class="btn btn-danger" 
+              v-on:click="modalCancel(Order.code)"
+            >
+              Cancelar
+            </button>
+          </div>
+        </dialog>
+
+        <dialog id="cancel_form">
+          <div class="modal-header">
+            <h3>Cancelar pedido {{ Order.code }}</h3>
+            <button 
+              class="close" 
+              v-on:click="closeCancelModal()"
+            >&times;</button>
+          </div>
+          <div>
+            <div v-if="message_order" class="alert alert-info">{{ message_order }}</div>
+          </div>
+          <div class="input-group">
+            <input 
+              type="textarea" 
+              v-model="information" 
+              class="form-control form-input" 
+              placeholder="Justificativa"
+              v-on:keyup.enter="patchCanceled(Order.code)"
+            >
+            <div class="input-group-append">
+              <button 
+                class="btn btn-danger" 
+                v-on:click="patchCanceled(Order.code)"
+              >
+                Cancelar Pedido
+              </button>
+            </div>
           </div>
         </dialog>
       </main>
